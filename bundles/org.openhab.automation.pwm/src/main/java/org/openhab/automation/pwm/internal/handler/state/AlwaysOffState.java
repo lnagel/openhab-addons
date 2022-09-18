@@ -38,6 +38,9 @@ public class AlwaysOffState extends State {
 
     @Override
     protected void dutyCycleUpdated() {
+        // trigger control update
+        controlOutput(false);
+
         // in case we came here by the dead-man switch
         if (Math.round(context.getDutycycle()) > 0) {
             nextState(OnState::new);

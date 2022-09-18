@@ -72,7 +72,16 @@ public class DutycycleHundredState extends State {
 
     @Override
     protected void dutyCycleUpdated() {
-        // nothing
+        // trigger control update
+
+        long newOnTimeMs = calculateOnTimeMs(context.getDutycycle());
+        long elapsedMs = enabledAt.until(Instant.now(), ChronoUnit.MILLIS);
+
+        if (elapsedMs - newOnTimeMs > 0) {
+            controlOutput(false);
+        } else {
+            controlOutput(true);
+        }
     }
 
     @Override

@@ -53,7 +53,8 @@ public class DutycycleZeroState extends State {
 
     @Override
     protected void dutyCycleUpdated() {
-        // nothing
+        // trigger control update
+        controlOutput(false);
     }
 
     @Override

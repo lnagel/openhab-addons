@@ -34,7 +34,8 @@ public class AlwaysOnState extends State {
 
     @Override
     protected void dutyCycleUpdated() {
-        // nothing
+        // trigger control update
+        controlOutput(true);
     }
 
     @Override
