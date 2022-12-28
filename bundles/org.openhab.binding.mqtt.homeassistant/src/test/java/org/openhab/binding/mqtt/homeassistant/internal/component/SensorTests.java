@@ -119,8 +119,8 @@ public class SensorTests extends AbstractComponentTests {
         assertChannel(component, Sensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "sensor1",
                 NumberValue.class);
 
-        publishMessage("zigbee2mqtt/bridge/state", "{ \"state\": \"online\" }");
-        publishMessage("zigbee2mqtt/sensor/availability", "{ \"state\": \"online\" }");
+        publishMessage("zigbee2mqtt/bridge/state", "online");
+        publishMessage("zigbee2mqtt/sensor/availability", "online");
         assertThat(haThing.getStatus(), is(ThingStatus.ONLINE));
         publishMessage("zigbee2mqtt/sensor/state", "10");
         assertState(component, Sensor.SENSOR_CHANNEL_ID, new QuantityType<>(10, Units.WATT));
@@ -131,8 +131,8 @@ public class SensorTests extends AbstractComponentTests {
 
         waitForAssert(() -> assertState(component, Sensor.SENSOR_CHANNEL_ID, UnDefType.UNDEF), 5000, 200);
 
-        publishMessage("zigbee2mqtt/bridge/state", "{ \"state\": \"offline\" }");
-        publishMessage("zigbee2mqtt/sensor/availability", "{ \"state\": \"offline\" }");
+        publishMessage("zigbee2mqtt/bridge/state", "offline");
+        publishMessage("zigbee2mqtt/sensor/availability", "offline");
         assertThat(haThing.getStatus(), is(ThingStatus.OFFLINE));
     }
 
