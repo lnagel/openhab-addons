@@ -86,7 +86,6 @@ public class SensorTests extends AbstractComponentTests {
     @Test
     public void testAvailabilityModeAll() throws InterruptedException {
         // @formatter:off
-        // {"availability":[{"topic":"zigbee2mqtt/bridge/state"},{"topic":"zigbee2mqtt/Bathroom2TH/availability"}],"availability_mode":"all","device":{"identifiers":["zigbee2mqtt_0x0015bc0035000c7a"],"manufacturer":"Develco","model":"Temperature & humidity sensor (HMSZB-110)","name":"Bathroom2TH","sw_version":"3.4.6"},"device_class":"battery","enabled_by_default":true,"entity_category":"diagnostic","json_attributes_topic":"zigbee2mqtt/Bathroom2TH","name":"Bathroom2TH battery","state_class":"measurement","state_topic":"zigbee2mqtt/Bathroom2TH","unique_id":"0x0015bc0035000c7a_battery_zigbee2mqtt","unit_of_measurement":"%","value_template":"{{ value_json.battery }}"}
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
                 "{ " +
                         "  \"availability\":[" +
