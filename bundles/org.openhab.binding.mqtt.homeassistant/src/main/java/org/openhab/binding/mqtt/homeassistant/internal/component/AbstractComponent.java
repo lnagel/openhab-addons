@@ -32,6 +32,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Availability;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AvailabilityMode;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.type.ChannelDefinition;
@@ -91,6 +92,8 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
         String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
         List<Availability> availability = this.channelConfiguration.getAvailability();
+        AvailabilityMode availabilityMode = this.channelConfiguration.getAvailabilityMode();
+
         String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
         if (availabilityTemplate != null) {
             availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
@@ -100,7 +103,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
             componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
                     this.channelConfiguration.getPayloadAvailable(), this.channelConfiguration.getPayloadNotAvailable(),
                     availabilityTemplate, componentConfiguration.getTransformationServiceProvider());
-        } else if (availability != null) {
+        } else if (availability != null && availabilityMode == AvailabilityMode.ALL) {
             for (Availability avail : availability) {
                 componentConfiguration.getTracker().addAvailabilityTopic(avail.getTopic(), avail.getPayloadAvailable(),
                         avail.getPayloadNotAvailable(), availabilityTemplate,
