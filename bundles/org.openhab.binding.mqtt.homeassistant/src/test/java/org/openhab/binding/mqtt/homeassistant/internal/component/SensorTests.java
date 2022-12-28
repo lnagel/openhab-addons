@@ -84,6 +84,59 @@ public class SensorTests extends AbstractComponentTests {
     }
 
     @Test
+    public void testAvailabilityModeAll() throws InterruptedException {
+        // @formatter:off
+        // {"availability":[{"topic":"zigbee2mqtt/bridge/state"},{"topic":"zigbee2mqtt/Bathroom2TH/availability"}],"availability_mode":"all","device":{"identifiers":["zigbee2mqtt_0x0015bc0035000c7a"],"manufacturer":"Develco","model":"Temperature & humidity sensor (HMSZB-110)","name":"Bathroom2TH","sw_version":"3.4.6"},"device_class":"battery","enabled_by_default":true,"entity_category":"diagnostic","json_attributes_topic":"zigbee2mqtt/Bathroom2TH","name":"Bathroom2TH battery","state_class":"measurement","state_topic":"zigbee2mqtt/Bathroom2TH","unique_id":"0x0015bc0035000c7a_battery_zigbee2mqtt","unit_of_measurement":"%","value_template":"{{ value_json.battery }}"}
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+                "{ " +
+                        "  \"availability\":[" +
+                        "    {\"topic\":\"zigbee2mqtt/bridge/state\"}," +
+                        "    {\"topic\":\"zigbee2mqtt/sensor/availability\"}" +
+                        "  ]," +
+                        "  \"availability_mode\":\"all\", " +
+                        "  \"device\": { " +
+                        "    \"identifiers\": [ " +
+                        "      \"zigbee2mqtt_0x0000000000000000\" " +
+                        "    ], " +
+                        "    \"manufacturer\": \"Sensors inc\", " +
+                        "    \"model\": \"Sensor\", " +
+                        "    \"name\": \"Sensor\", " +
+                        "    \"sw_version\": \"Zigbee2MQTT 1.18.2\" " +
+                        "  }, " +
+                        "  \"name\": \"sensor1\", " +
+                        "  \"expire_after\": \"1\", " +
+                        "  \"force_update\": \"true\", " +
+                        "  \"unit_of_measurement\": \"W\", " +
+                        "  \"state_topic\": \"zigbee2mqtt/sensor/state\", " +
+                        "  \"unique_id\": \"sn1\" " +
+                        "}");
+        // @formatter:on
+
+        assertThat(component.channels.size(), is(1));
+        assertThat(component.getName(), is("sensor1"));
+        assertThat(component.getGroupUID().getId(), is("sn1"));
+
+        assertChannel(component, Sensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "sensor1",
+                NumberValue.class);
+
+        publishMessage("zigbee2mqtt/bridge/state", "{ \"state\": \"online\" }");
+        publishMessage("zigbee2mqtt/sensor/availability", "{ \"state\": \"online\" }");
+        assertThat(haThing.getStatus(), is(ThingStatus.ONLINE));
+        publishMessage("zigbee2mqtt/sensor/state", "10");
+        assertState(component, Sensor.SENSOR_CHANNEL_ID, new QuantityType<>(10, Units.WATT));
+        publishMessage("zigbee2mqtt/sensor/state", "20");
+        assertState(component, Sensor.SENSOR_CHANNEL_ID, new QuantityType<>(20, Units.WATT));
+        assertThat(component.getChannel(Sensor.SENSOR_CHANNEL_ID).getState().getCache().createStateDescription(true)
+                .build().getPattern(), is("%s W"));
+
+        waitForAssert(() -> assertState(component, Sensor.SENSOR_CHANNEL_ID, UnDefType.UNDEF), 5000, 200);
+
+        publishMessage("zigbee2mqtt/bridge/state", "{ \"state\": \"offline\" }");
+        publishMessage("zigbee2mqtt/sensor/availability", "{ \"state\": \"offline\" }");
+        assertThat(haThing.getStatus(), is(ThingStatus.OFFLINE));
+    }
+
+    @Test
     public void testMeasurementStateClass() throws InterruptedException {
         // @formatter:off
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
