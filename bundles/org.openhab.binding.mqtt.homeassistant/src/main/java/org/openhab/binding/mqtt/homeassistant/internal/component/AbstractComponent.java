@@ -91,19 +91,20 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
         String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
         List<Availability> availability = this.channelConfiguration.getAvailability();
+        String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
+        if (availabilityTemplate != null) {
+            availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+        }
 
         if (availabilityTopic != null) {
-            String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
-            if (availabilityTemplate != null) {
-                availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
-            }
             componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
                     this.channelConfiguration.getPayloadAvailable(), this.channelConfiguration.getPayloadNotAvailable(),
                     availabilityTemplate, componentConfiguration.getTransformationServiceProvider());
         } else if (availability != null) {
             for (Availability avail : availability) {
                 componentConfiguration.getTracker().addAvailabilityTopic(avail.getTopic(), avail.getPayloadAvailable(),
-                        avail.getPayloadNotAvailable());
+                        avail.getPayloadNotAvailable(), availabilityTemplate,
+                        componentConfiguration.getTransformationServiceProvider());
 
             }
         }
